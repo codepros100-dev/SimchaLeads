@@ -5,8 +5,10 @@ Each sender can be configured via settings.
 
 import json
 import smtplib
+import base64
 import urllib.request
 import urllib.error
+import urllib.parse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
@@ -42,7 +44,6 @@ def send_sms(to_phone: str, message: str) -> dict:
         'Body': message,
     }).encode()
 
-    import base64
     credentials = base64.b64encode(f"{account_sid}:{auth_token}".encode()).decode()
 
     req = urllib.request.Request(url, data=data, headers={
@@ -72,7 +73,6 @@ def send_whatsapp(to_phone: str, message: str) -> dict:
 
     url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
 
-    # WhatsApp numbers need the whatsapp: prefix
     if not to_phone.startswith('whatsapp:'):
         to_phone = f"whatsapp:{to_phone}"
     if not from_number.startswith('whatsapp:'):
@@ -84,7 +84,6 @@ def send_whatsapp(to_phone: str, message: str) -> dict:
         'Body': message,
     }).encode()
 
-    import base64
     credentials = base64.b64encode(f"{account_sid}:{auth_token}".encode()).decode()
 
     req = urllib.request.Request(url, data=data, headers={
