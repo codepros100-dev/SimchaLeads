@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimchaLeads - CodePros</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>SimchaLeads</h1>
+        <div class="subtitle">Engagement Lead Management - CodePros</div>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="btn-pipeline" onclick="runPipeline()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);">
+            Run Full Pipeline
+        </button>
+    </div>
+</header>
+
+<nav class="tabs">
+    <div class="tab active" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="engagements">Engagements</div>
+    <div class="tab" data-tab="contacts">Contacts</div>
+    <div class="tab" data-tab="drafts">Drafts &amp; Send</div>
+    <div class="tab" data-tab="settings">Settings</div>
+</nav>
+
+<div id="alerts" style="max-width:1200px;margin:16px auto 0;padding:0 24px;"></div>
+
+<main>
+
+    <!-- ═══ Dashboard ═══ -->
+    <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number" id="stat-engagements">0</div>
+                <div class="label">Engagements</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="stat-contacts">0</div>
+                <div class="label">Contacts</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="stat-matches">0</div>
+                <div class="label">Matches</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="stat-drafts">0</div>
+                <div class="label">Pending Drafts</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="stat-approved">0</div>
+                <div class="label">Approved</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="stat-sent">0</div>
+                <div class="label">Sent</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3>Quick Actions</h3></div>
+            <div class="card-body">
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="runScrape()">Scrape Instagram</button>
+                    <button class="btn btn-warning" onclick="runMatch()">Run Matching</button>
+                    <button class="btn btn-success" onclick="runGenerateDrafts()">Generate Drafts</button>
+                </div>
+                <p style="margin-top:12px;color:var(--gray-500);font-size:13px;">
+                    Or use "Run Full Pipeline" to do all three in sequence.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Engagements ═══ -->
+    <div class="page" id="page-engagements">
+        <div class="card">
+            <div class="card-header">
+                <h3>Add Engagement Manually</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chatan First Name *</label>
+                        <input class="form-control" id="add-chatan_first" placeholder="Moshe">
+                    </div>
+                    <div class="form-group">
+                        <label>Chatan Last Name</label>
+                        <input class="form-control" id="add-chatan_last" placeholder="Cohen">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Kallah First Name *</label>
+                        <input class="form-control" id="add-kallah_first" placeholder="Sarah">
+                    </div>
+                    <div class="form-group">
+                        <label>Kallah Last Name</label>
+                        <input class="form-control" id="add-kallah_last" placeholder="Levy">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addEngagementManual()">Add Engagement</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Engagement List</h3>
+                <button class="btn btn-outline btn-sm" onclick="loadEngagements()">Refresh</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chatan</th>
+                        <th>Kallah</th>
+                        <th>Date</th>
+                        <th>Matches</th>
+                        <th>Drafts</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="engagements-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══ Contacts ═══ -->
+    <div class="page" id="page-contacts">
+        <div class="card">
+            <div class="card-header">
+                <h3>Import Contacts</h3>
+            </div>
+            <div class="card-body">
+                <p style="margin-bottom:12px;color:var(--gray-500);font-size:13px;">
+                    Export from Smartlist to your phone contacts, then export as CSV or VCF and upload here.
+                </p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>File (CSV or VCF)</label>
+                        <input type="file" id="contact-file" class="form-control" accept=".csv,.vcf">
+                    </div>
+                    <div class="form-group">
+                        <label>Community (optional)</label>
+                        <input class="form-control" id="import-community" placeholder="Lakewood">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="importContacts()">Import</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Contact Directory</h3>
+                <input class="form-control" id="contact-search" placeholder="Search..." style="width:250px;">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody id="contacts-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══ Drafts & Send ═══ -->
+    <div class="page" id="page-drafts">
+        <div class="card">
+            <div class="card-header">
+                <h3>Message Drafts</h3>
+                <div class="btn-group">
+                    <select class="form-control" id="draft-status-filter" onchange="loadDrafts()" style="width:130px;">
+                        <option value="">All Status</option>
+                        <option value="draft">Draft</option>
+                        <option value="approved">Approved</option>
+                        <option value="sent">Sent</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    <select class="form-control" id="draft-channel-filter" onchange="loadDrafts()" style="width:130px;">
+                        <option value="">All Channels</option>
+                        <option value="sms">SMS</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="approveAllDrafts()">Approve All</button>
+                    <button class="btn btn-success btn-sm" onclick="sendAllApproved()">Send All Approved</button>
+                </div>
+            </div>
+            <div class="card-body" id="drafts-list">
+                <div class="empty-state">
+                    <div class="icon">&#9993;</div>
+                    <h3>No drafts yet</h3>
+                    <p>Run the pipeline to scrape, match, and generate drafts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Settings ═══ -->
+    <div class="page" id="page-settings">
+        <div id="settings-form"></div>
+        <div style="margin-top:16px;">
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+
+</main>
+
+<!-- ═══ Edit Draft Modal ═══ -->
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Edit Draft Message</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-draft-id">
+            <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-control" id="edit-draft-message" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEditDraft()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
